@@ -34,7 +34,3 @@
 - Se usa JSON para las peticiones POST y DELETE cuando se requiere enviar datos.
 - Las fechas deben estar en formato `"YYYY-MM-DD"`.
 - Las horas deben estar en formato `"HH:mm:ss"`.
-
-# TAREAS QUE HAY QUE REALIZAR
-
-crud completo reservas, mirar el controlador reservas y mirar el TO-DO Crud de usuarios tambien, como MIS-RESERVAS. Tocar backend para horarios disponibles
