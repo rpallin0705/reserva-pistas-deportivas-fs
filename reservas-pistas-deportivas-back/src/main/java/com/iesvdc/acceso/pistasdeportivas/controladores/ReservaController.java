@@ -10,6 +10,13 @@ import com.iesvdc.acceso.pistasdeportivas.servicios.ServiHorario;
 import com.iesvdc.acceso.pistasdeportivas.servicios.ServiInstalacion;
 import com.iesvdc.acceso.pistasdeportivas.servicios.ServiMisReservas;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,25 +74,21 @@ public class ReservaController {
         }
     }
 
-    /**
-     * Controlador que devuelve una lista con los horarios disponibles para una instalación
-     * en una fecha definida
-     * @param id de la instalación a la cual se quiere realizar la reserva
-     * @param fecha en la que se quiere realizar la reserva para buscar horaris libres
-     * @return Lista de horarios disponibles | 404 Not Found si está vacía
-     */
     @GetMapping("/horario/instalacion/{id}/fecha/{fecha}")
+    @Operation(summary = "Obtener horarios disponibles", description = "Devuelve una lista con los horarios disponibles para una instalación en una fecha específica.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de horarios disponibles", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = Horario.class)) }),
+            @ApiResponse(responseCode = "404", description = "No hay horarios disponibles para la instalación y fecha especificadas", content = @Content)
+    })
     public ResponseEntity<List<Horario>> horariosPorInstalacionFecha(
-            @PathVariable long id,
-            @PathVariable LocalDate fecha) {
-        // TO-DO
-        /*
-         * Hacer un método que me diga para una fecha qué
-         * horarios están sin reservas para una instalación
-         */
+            @Parameter(description = "ID de la instalación") @PathVariable long id,
+            @Parameter(description = "Fecha para la búsqueda de horarios libres (Formato: YYYY-MM-DD)") @PathVariable LocalDate fecha) {
+
         List<Horario> listFreeHorarios = serviHorario.findFreeHorarios(id, fecha);
 
         return !listFreeHorarios.isEmpty() ? ResponseEntity.ok(listFreeHorarios)
                 : ResponseEntity.notFound().build();
     }
+
 }
