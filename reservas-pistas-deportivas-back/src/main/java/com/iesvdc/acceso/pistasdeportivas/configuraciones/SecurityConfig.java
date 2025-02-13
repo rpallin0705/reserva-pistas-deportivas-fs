@@ -36,19 +36,25 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/instalacion/**","/api/instalacion/*/**").authenticated()
-                        .requestMatchers("/api/horario/**","/api/horario/*/**", "/api/usuario").authenticated()
+                        // 🔹 Permitir Swagger y API Docs
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/v3/api-docs.yaml")
+                        .permitAll()
+
+                        // 🔹 Rutas protegidas
+                        .requestMatchers("/api/instalacion/**", "/api/instalacion/*/**").authenticated()
+                        .requestMatchers("/api/horario/**", "/api/horario/*/**", "/api/usuario").authenticated()
                         .requestMatchers("/api/reservar/**", "/api/reservar/*/**",
-                            "/api/mis-reservas/**", "/api/mis-reservas/*/**").authenticated()
+                                "/api/mis-reservas/**", "/api/mis-reservas/*/**")
+                        .authenticated()
                         .requestMatchers("/api/auth/**", "/api/auth/*/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN"))                        
+                        .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()) 
+                .authenticationProvider(authenticationProvider())
                 .cors(Customizer.withDefaults())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }    
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
@@ -77,12 +83,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Especificamos el origen permitido en lugar de "*" cuando allowCredentials es true
+        // Especificamos el origen permitido en lugar de "*" cuando allowCredentials es
+        // true
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-    
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
         return source;
