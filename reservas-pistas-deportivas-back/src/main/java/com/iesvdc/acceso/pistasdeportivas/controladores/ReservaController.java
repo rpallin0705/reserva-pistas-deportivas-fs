@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
 
 @RestController
 @RequestMapping("/api/mis-reservas")
@@ -39,10 +38,10 @@ public class ReservaController {
     ServiInstalacion serviInstalacion;
 
     @GetMapping
-    public List<Reserva> findAll() {        
-        return  serviMisReservas.findReservasByUsuario();
+    public List<Reserva> findAll() {
+        return serviMisReservas.findReservasByUsuario();
     }
-    
+
     @PostMapping
     public ResponseEntity<Reserva> create(@RequestBody Reserva reserva) {
         try {
@@ -50,14 +49,14 @@ public class ReservaController {
             return ResponseEntity.ok(reserva);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
-        }        
+        }
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Reserva> delete(@PathVariable long id) {
         Optional<Reserva> oReserva;
         try {
-            oReserva =  serviMisReservas.deleteReserva(id);
+            oReserva = serviMisReservas.deleteReserva(id);
             if (oReserva.isPresent()) {
                 return ResponseEntity.ok(oReserva.get());
             } else {
@@ -67,21 +66,26 @@ public class ReservaController {
             return ResponseEntity.badRequest().build();
         }
     }
-    
+
+    /**
+     * Controlador que devuelve una lista con los horarios disponibles para una instalación
+     * en una fecha definida
+     * @param id de la instalación a la cual se quiere realizar la reserva
+     * @param fecha en la que se quiere realizar la reserva para buscar horaris libres
+     * @return Lista de horarios disponibles | 404 Not Found si está vacía
+     */
     @GetMapping("/horario/instalacion/{id}/fecha/{fecha}")
-    public List<Horario> horariosPorInstalacionFecha(
-        @PathVariable long id,
-        @PathVariable LocalDate fecha) {    
+    public ResponseEntity<List<Horario>> horariosPorInstalacionFecha(
+            @PathVariable long id,
+            @PathVariable LocalDate fecha) {
         // TO-DO
         /*
          * Hacer un método que me diga para una fecha qué
          * horarios están sin reservas para una instalación
          */
-        Optional<Instalacion> oInstalacion = serviInstalacion.findById(id);
-        
-        if (oInstalacion.isPresent())
-            return serviHorario.findByInstalacion(oInstalacion.get());
-        else 
-            return new ArrayList<Horario>();
+        List<Horario> listFreeHorarios = serviHorario.findFreeHorarios(id, fecha);
+
+        return !listFreeHorarios.isEmpty() ? ResponseEntity.ok(listFreeHorarios)
+                : ResponseEntity.notFound().build();
     }
 }
