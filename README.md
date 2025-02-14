@@ -37,4 +37,4 @@
 
 # TAREAS QUE HAY QUE REALIZAR
 
-crud completo reservas, mirar el controlador reservas y mirar el TO-DO Crud de usuarios tambien, como MIS-RESERVAS. Tocar backend para horarios disponibles
+crud completo reservas, mirar el controlador reservas y mirar el TO-DO Crud de usuarios tambien, como MIS-RESERVAS.

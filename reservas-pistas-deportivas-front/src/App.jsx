@@ -45,6 +45,22 @@ const router = createBrowserRouter([
         path: "mis-reservas",
         element: <ReservasPage />,
       },
+      {
+        path: "mis-reservas",
+        element: <ReservaFormPage />, 
+      },
+      {
+        path: "mis-reservas/add",
+        element: <ReservaFormPage />,
+      },
+      {
+        path: "mis-reservas/edit/:id",
+        element: <ReservaFormPage />,
+      },
+      {
+        path: "mis-reservas/del/:id",
+        element: <ReservaDeletePage />,
+      }
     ],
   },
 ]);
