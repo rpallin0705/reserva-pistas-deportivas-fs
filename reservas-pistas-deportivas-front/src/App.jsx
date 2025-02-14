@@ -10,6 +10,7 @@ import InstalacionFormPage from "./pages/InstalacionFormPage";
 import ReservasPage from "./pages/ReservasPage";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import MisReservasFormPage from "./pages/MisReservasFormPage";
 
 
 const router = createBrowserRouter([
@@ -44,6 +45,14 @@ const router = createBrowserRouter([
       {
         path: "mis-reservas",
         element: <ReservasPage />,
+      },
+      {
+        path: "mis-reservas/edit/:id",
+        element: <MisReservasFormPage />,
+      },
+      {
+        path: "mis-reservas/add/:id",
+        element: <MisReservasFormPage />,
       },
     ],
   },
