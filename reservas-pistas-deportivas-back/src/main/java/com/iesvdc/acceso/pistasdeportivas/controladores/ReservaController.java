@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,10 +53,17 @@ public class ReservaController {
     @PostMapping
     public ResponseEntity<Reserva> create(@RequestBody Reserva reserva) {
         try {
+            if (reserva.getFecha().isBefore(LocalDate.now())) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            if (reserva.getFecha().isAfter(LocalDate.now().plus(1, ChronoUnit.WEEKS))) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            System.out.println(reserva.toString());
             reserva = serviMisReservas.saveReserva(reserva);
             return ResponseEntity.ok(reserva);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
