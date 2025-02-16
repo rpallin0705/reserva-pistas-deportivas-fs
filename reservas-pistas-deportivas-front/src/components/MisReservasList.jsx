@@ -7,27 +7,34 @@ const MisReservasList = () => {
     const [reservas, setReservas] = useState([]);
     const navigate = useNavigate();
 
-    useEffect(() => { 
+    useEffect(() => {
         const peticion = async () => {
             try {
-                const response = await api.get('/mis-reservas');
+                const response = await api.get("/mis-reservas");
                 setReservas(response.data);
             } catch (err) {
-                // setError('No se puede completar la operación');
-                navigate('/login')
+                navigate("/login");
                 console.log(err);
             }
         };
         peticion();
-    }, []); // <-- Agrega el arreglo de dependencias vacío
+    }, [navigate]);
+
+    const isEditableOrDeletable = (fechaReserva) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const reservaDate = new Date(fechaReserva);
+        reservaDate.setHours(0, 0, 0, 0);
+        return reservaDate >= today;
+    };
 
     return (
         <Container>
             <Table>
                 <thead>
                     <tr>
-                        <th>ID</th>  
-                        <th>Instalacion</th> 
+                        <th>ID</th>
+                        <th>Instalación</th>
                         <th>Hora reserva</th>
                         <th>Fecha reserva</th>
                         <th>Editar</th>
@@ -35,27 +42,59 @@ const MisReservasList = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {reservas.map((reserva) => (
-                        <tr key={reserva.id}>
-                            <td>{reserva.id}</td>
-                            <td>{reserva.horario.instalacion.nombre}</td>
-                            <td>{reserva.horario.horaInicio}</td>
-                            <td>{reserva.fecha}</td>
-                            <td>
-                                <Button as={Link} to={`/mis-reservas/edit/${reserva.id}`} className="btn-success">
-                                    Editar
-                                </Button>
-                            </td>                            
-                            <td>
-                                <Button as={Link} to={`/mis-reservas/del/${reserva.id}`} className="btn-danger">
-                                    Eliminar
-                                </Button>
-                            </td>
-                        </tr>
-                    ))}
+                    {reservas.map((reserva) => {
+                        const editable = isEditableOrDeletable(reserva.fecha);
+                        return (
+                            <tr key={reserva.id}>
+                                <td>{reserva.id}</td>
+                                <td>{reserva.horario.instalacion.nombre}</td>
+                                <td>{reserva.horario.horaInicio}</td>
+                                <td>{reserva.fecha}</td>
+                                <td>
+                                    {editable ? (
+                                        <Button
+                                            as={Link}
+                                            to={`/mis-reservas/edit/${reserva.id}`}
+                                            state={{ reserva }}
+                                            className="btn-success"
+                                        >
+                                            Editar
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            disabled
+                                            title="No se puede editar una reserva pasada"
+                                            className="btn-secondary"
+                                        >
+                                            No editable
+                                        </Button>
+                                    )}
+                                </td>
+                                <td>
+                                    {editable ? (
+                                        <Button
+                                            as={Link}
+                                            to={`/mis-reservas/del/${reserva.id}`}
+                                            state={{ reserva }}
+                                            className="btn-danger"
+                                        >
+                                            Eliminar
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            disabled
+                                            title="No se puede borrar una reserva pasada"
+                                            className="btn-secondary"
+                                        >
+                                            No eliminable
+                                        </Button>
+                                    )}
+                                </td>
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </Table>
-            {/*error && <p style={{ color: 'red' }}>{error}</p>*/}
         </Container>
     );
 };
