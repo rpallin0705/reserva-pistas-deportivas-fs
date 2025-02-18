@@ -76,9 +76,4 @@
 4. **Gestionar Instalaciones**:
    - Si eres un `ADMIN`, haz clic en "Instalaciones" para gestionar las instalaciones deportivas.
 
----
 
-## **Notas Adicionales**
-- **Validaciones**: Los formularios validan los datos ingresados para evitar errores.
-- **Manejo de Errores**: Se muestran mensajes de error descriptivos en caso de problemas.
-- **Seguridad**: Las rutas y funcionalidades están protegidas según el rol del usuario.
