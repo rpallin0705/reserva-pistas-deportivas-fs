@@ -41,6 +41,10 @@ public class ServiUsuario {
         repoUsuario.delete(usuario);
     }
 
+    public void deleteById(Long id) {
+        repoUsuario.deleteById(id);
+    }
+
     public Optional<Usuario> update(Long id, Usuario usuario) {
         return repoUsuario.findById(id).map(existing -> {
 

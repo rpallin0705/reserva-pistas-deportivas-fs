@@ -26,5 +26,37 @@ public class Usuario{
     private boolean enabled;
     @Enumerated(EnumType.STRING)
     private Rol tipo;
+
+
+    public Usuario id(Long id) {
+        setId(id);
+        return this;
+    }
+
+    public Usuario username(String username) {
+        setUsername(username);
+        return this;
+    }
+
+    public Usuario password(String password) {
+        setPassword(password);
+        return this;
+    }
+
+    public Usuario email(String email) {
+        setEmail(email);
+        return this;
+    }
+
+    public Usuario enabled(boolean enabled) {
+        setEnabled(enabled);
+        return this;
+    }
+
+    public Usuario tipo(Rol tipo) {
+        setTipo(tipo);
+        return this;
+    }
+
 }
 
