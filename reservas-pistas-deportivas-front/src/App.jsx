@@ -8,6 +8,10 @@ import InstalacionesPage from "./pages/InstalacionesPage";
 import InstalacionDeletePage from "./pages/InstalacionDeletePage";
 import InstalacionFormPage from "./pages/InstalacionFormPage";
 import ReservasPage from "./pages/ReservasPage";
+import UsuariosPage from "./pages/UsuariosPage";
+import UsuarioFormPage from "./pages/UsuarioFormPage";
+import UsuarioDeletePage from "./pages/UsuarioDeletePage";
+
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MisReservasFormPage from "./pages/MisReservasFormPage";

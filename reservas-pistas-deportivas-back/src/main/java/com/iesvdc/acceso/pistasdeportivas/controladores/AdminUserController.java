@@ -23,7 +23,7 @@ import com.iesvdc.acceso.pistasdeportivas.servicios.ServiUsuario;
 @RequestMapping("/api/admin/usuario")
 public class AdminUserController {
 
-     @Autowired
+    @Autowired
     private ServiUsuario serviUsuario;
 
     @Autowired
@@ -39,41 +39,40 @@ public class AdminUserController {
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         Optional<Usuario> usuario = repoUsuario.findById(id);
         return usuario.map(ResponseEntity::ok)
-        .orElseGet(() -> ResponseEntity.notFound().build());
+                      .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
-        @PostMapping
-        public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
-            if(usuario.getTipo() == null){
-                usuario.setTipo(Rol.USUARIO);
-            }
-
-            Usuario nuevoUsuario = repoUsuario.save(usuario);
-            return ResponseEntity.ok(nuevoUsuario);
+    @PostMapping
+    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
+        if (usuario.getTipo() == null) {
+            usuario.setTipo(Rol.USUARIO);
+        }
+        Usuario nuevoUsuario = repoUsuario.save(usuario);
+        return ResponseEntity.ok(nuevoUsuario);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> updateUsuario(
-        @PathVariable Long id,
-        @RequestBody Usuario usuarioActualizado){
-            return repoUsuario.findById(id).map(usuario -> {
-                usuario.setUsername(usuarioActualizado.getUsername());
-                usuario.setEmail(usuarioActualizado.getEmail());
-                usuario.setEnabled(usuarioActualizado.isEnabled());
-                usuario.setPassword(usuarioActualizado.getPassword());
-                Usuario usuarioGuardado = repoUsuario.save(usuario);
-                return ResponseEntity.ok(usuarioGuardado);
-            }).orElseGet(() -> ResponseEntity.notFound().build());
-        }
+            @PathVariable Long id,
+            @RequestBody Usuario usuarioActualizado) {
+        return repoUsuario.findById(id).map(usuario -> {
+            usuario.setUsername(usuarioActualizado.getUsername());
+            usuario.setEmail(usuarioActualizado.getEmail());
+            usuario.setTipo(usuarioActualizado.getTipo());
+            usuario.setEnabled(usuarioActualizado.isEnabled());
+            usuario.setPassword(usuarioActualizado.getPassword());
+            Usuario usuarioGuardado = repoUsuario.save(usuario);
+            return ResponseEntity.ok(usuarioGuardado);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
-        @DeleteMapping("/{id}")
-        public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
-           if(repoUsuario.existsById(id)) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
+        if (repoUsuario.existsById(id)) {
             repoUsuario.deleteById(id);
-
             return ResponseEntity.noContent().build();
-           } else {
+        } else {
             return ResponseEntity.notFound().build();
-           }
         }
     }
 }
