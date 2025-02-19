@@ -1,6 +1,6 @@
 package com.iesvdc.acceso.pistasdeportivas.servicios;
 
-
+import com.iesvdc.acceso.pistasdeportivas.configuraciones.ValidadorReserva;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Reserva;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Usuario;
 import com.iesvdc.acceso.pistasdeportivas.repos.RepoReserva;
@@ -19,7 +19,6 @@ public class ServiMisReservas {
     @Autowired
     private ServiUsuario serviUsuario;
 
-
     /**
      * Obtiene las reservas del usuario que hizo login.
      *
@@ -29,51 +28,69 @@ public class ServiMisReservas {
     public List<Reserva> findReservasByUsuario() {
         return repoReserva.findByUsuario(serviUsuario.getLoggedUser());
     }
-        
+
     /**
-     * Crea o actualiza una reserva. Si tiene ID la reserva actualizamos.
-     * Si actualizamos comprobamos que la reserva esté a nombre del usuario
-     * que hizo login. En caso contrario lanzamos excepción.
-     * 
+     * Crea o actualiza una reserva. Si tiene ID la reserva se actualiza.
+     * Se validan las siguientes reglas:
+     * - No se pueden hacer reservas en fechas pasadas.
+     * - No se pueden hacer reservas con más de dos semanas de antelación.
+     * - No se pueden hacer reservas duplicadas para el mismo usuario y fecha.
+     * - No se pueden hacer reservas en instalaciones que ya estén ocupadas.
+     * - No se pueden editar reservas que ya han pasado o son para hoy.
+     *
      * @param reserva la reserva a guardar
      * @return la reserva guardada
-     * @throws Exception 
+     * @throws Exception si hay errores de validación
      */
     public Reserva saveReserva(Reserva reserva) throws Exception {
         Usuario uLogged = serviUsuario.getLoggedUser();
-        if (reserva.getId()!=null) {
-            reserva.setUsuario(uLogged);
+        reserva.setUsuario(uLogged);
+
+        ValidadorReserva.validarFechaReserva(reserva.getFecha());
+
+        if (reserva.getId() != null) {
             Optional<Reserva> oReserva = repoReserva.findById(reserva.getId());
+
             if (oReserva.isPresent()) {
                 if (!oReserva.get().getUsuario().equals(uLogged)) {
-                    throw new Exception("Reserva a nombre de otra persona");    
+                    throw new Exception("No puedes modificar una reserva que no te pertenece.");
                 }
+                ValidadorReserva.validarReservaPasada(oReserva.get());
             } else {
-                throw new Exception("Reserva inexistente");
+                throw new Exception("La reserva no existe.");
             }
         } else {
-            // crear una nueva reserva, con el usuario que hizo login
-            reserva.setUsuario(uLogged);
+            ValidadorReserva.validarReservaDuplicada(uLogged, reserva.getFecha(), repoReserva);
+            ValidadorReserva.validarInstalacionReservada(reserva, repoReserva);
         }
-        
+
         return repoReserva.save(reserva);
     }
 
     /**
-     * Elimina una reserva por su identificador. si el usuario no coincide 
-     * lo tratamos como si no existe la reserva en la BBDD.
+     * Elimina una reserva por su identificador. Se validan las siguientes reglas:
+     * - El usuario debe ser el dueño de la reserva.
+     * - No se pueden eliminar reservas que ya han pasado o que son para hoy.
      *
      * @param id el id de la reserva a eliminar
+     * @return la reserva eliminada si existía y se pudo borrar
      */
     public Optional<Reserva> deleteReserva(Long id) {
         Optional<Reserva> reserva = repoReserva.findById(id);
-        if (reserva.isPresent())
-            if (reserva.get().getUsuario().equals(serviUsuario.getLoggedUser())){
-                repoReserva.deleteById(id);                
-            } else {
-                // si el usuario no coincide lo tratamos como si no existe en la BBDD
-                return Optional.empty(); 
+
+        if (reserva.isPresent()) {
+            Usuario uLogged = serviUsuario.getLoggedUser();
+
+            if (!reserva.get().getUsuario().equals(uLogged)) {
+                return Optional.empty(); // Si el usuario no coincide, la tratamos como inexistente
             }
+
+            // Validar que la reserva no sea pasada o para hoy
+            ValidadorReserva.validarReservaPasada(reserva.get());
+
+            repoReserva.deleteById(id);
+        }
+
         return reserva;
     }
 }

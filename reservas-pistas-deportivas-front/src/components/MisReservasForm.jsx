@@ -114,8 +114,6 @@ const MisReservasForm = () => {
             fecha: fecha,
         };
 
-        console.log(reservaData)
-
         try {
             const response = await api.post("/mis-reservas", reservaData);
             if (response.status === 200) {
