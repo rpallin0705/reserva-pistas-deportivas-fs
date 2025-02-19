@@ -3,8 +3,6 @@ package com.iesvdc.acceso.pistasdeportivas.controladores;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.iesvdc.acceso.pistasdeportivas.exceptions.InstalacionReservadaException;
-import com.iesvdc.acceso.pistasdeportivas.exceptions.ReservaDuplicadaException;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Horario;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Instalacion;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Reserva;
@@ -53,27 +51,19 @@ public class ReservaController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody Reserva reserva) {
+    public ResponseEntity<Reserva> create(@RequestBody Reserva reserva) {
         try {
             if (reserva.getFecha().isBefore(LocalDate.now())) {
-                return ResponseEntity.badRequest().body("Error: No se pueden hacer reservas en fechas pasadas.");
+                return ResponseEntity.badRequest().body(null);
             }
             if (reserva.getFecha().isAfter(LocalDate.now().plus(1, ChronoUnit.WEEKS))) {
-                return ResponseEntity.badRequest()
-                        .body("Error: No se pueden hacer reservas con más de una semana de antelación.");
+                return ResponseEntity.badRequest().body(null);
             }
-
             System.out.println(reserva.toString());
-
             reserva = serviMisReservas.saveReserva(reserva);
             return ResponseEntity.ok(reserva);
-        } catch (ReservaDuplicadaException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Ya tienes una reserva en esta fecha.");
-        } catch (InstalacionReservadaException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body("Error: La instalación ya está reservada en ese horario.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error inesperado: " + e.getMessage());
+            return ResponseEntity.badRequest().body(null);
         }
     }
 
