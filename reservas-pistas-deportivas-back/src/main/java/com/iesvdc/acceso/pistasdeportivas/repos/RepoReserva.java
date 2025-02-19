@@ -23,8 +23,6 @@ public interface RepoReserva extends JpaRepository<Reserva, Long> {
     // Reservas para un usuario
     List<Reserva> findByUsuario(Usuario usuario);
     List<Reserva> findByUsuario(Usuario usuario, Pageable page);
-    boolean existsByUsuarioAndFecha(Usuario usuario, LocalDate fecha);
-    boolean existsByFechaAndHorario(LocalDate fecha, Horario horario);
 
     // Reservas para una instalación
     @Query("SELECT r FROM Reserva r WHERE r.horario.instalacion = :instalacion")
@@ -43,6 +41,4 @@ public interface RepoReserva extends JpaRepository<Reserva, Long> {
            "AND h.id NOT IN (SELECT r.horario.id FROM Reserva r WHERE r.fecha = :fecha)")
     List<Horario> findHorarioByInstalacionFree(@Param("instalacion") Instalacion instalacion, 
                                                @Param("fecha") LocalDate fecha);
-
-       
 }
