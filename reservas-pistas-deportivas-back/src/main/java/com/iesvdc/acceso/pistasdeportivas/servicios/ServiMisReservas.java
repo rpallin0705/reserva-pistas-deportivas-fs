@@ -42,6 +42,7 @@ public class ServiMisReservas {
     public Reserva saveReserva(Reserva reserva) throws Exception {
         Usuario uLogged = serviUsuario.getLoggedUser();
         if (reserva.getId()!=null) {
+            reserva.setUsuario(uLogged);
             Optional<Reserva> oReserva = repoReserva.findById(reserva.getId());
             if (oReserva.isPresent()) {
                 if (!oReserva.get().getUsuario().equals(uLogged)) {

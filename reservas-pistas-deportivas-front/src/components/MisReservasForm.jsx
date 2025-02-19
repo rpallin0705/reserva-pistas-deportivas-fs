@@ -101,7 +101,7 @@ const MisReservasForm = () => {
 
         const reservaData = {
             id: estado() === "edit" ? reservaId : null,
-            usuario: { id: 0 },
+            usuario: undefined,
             horario: {
                 id: selectedHorario.id,
                 instalacion: {
@@ -113,6 +113,8 @@ const MisReservasForm = () => {
             },
             fecha: fecha,
         };
+
+        console.log(reservaData)
 
         try {
             const response = await api.post("/mis-reservas", reservaData);
