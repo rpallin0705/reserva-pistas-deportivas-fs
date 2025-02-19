@@ -58,6 +58,7 @@ public class ServiMisReservas {
                     throw new Exception("No puedes modificar una reserva que no te pertenece.");
                 }
                 ValidadorReserva.validarReservaPasada(oReserva.get());
+                ValidadorReserva.validarReservaDuplicada(uLogged, reserva.getFecha(), repoReserva);
             } else {
                 throw new Exception("La reserva no existe.");
             }

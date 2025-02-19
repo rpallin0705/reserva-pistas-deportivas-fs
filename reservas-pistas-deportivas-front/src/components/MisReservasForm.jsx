@@ -113,19 +113,23 @@ const MisReservasForm = () => {
             },
             fecha: fecha,
         };
-
-        console.log(reservaData)
-
+        
         try {
             const response = await api.post("/mis-reservas", reservaData);
+
             if (response.status === 200) {
                 navigate("/mis-reservas");
             } else {
-                setError(estado() === "edit" ? "Hubo un error al actualizar la reserva. Intenta nuevamente." : "Hubo un error al crear la reserva. Intenta nuevamente.");
+                setError("Hubo un error en la operación.");
             }
         } catch (err) {
-            setError("No se puede completar la petición");
-            console.error(err);
+            console.error("Error al enviar la reserva:", err);
+
+            if (err.response) {
+                setError(err.response.data || "Ocurrió un error inesperado.");
+            } else {
+                setError("No se puede conectar con el servidor.");
+            }
         }
     };
 
