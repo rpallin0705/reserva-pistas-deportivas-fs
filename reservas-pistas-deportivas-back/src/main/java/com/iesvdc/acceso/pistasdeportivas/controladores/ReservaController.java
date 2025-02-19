@@ -3,6 +3,8 @@ package com.iesvdc.acceso.pistasdeportivas.controladores;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.iesvdc.acceso.pistasdeportivas.exceptions.InstalacionReservadaException;
+import com.iesvdc.acceso.pistasdeportivas.exceptions.ReservaDuplicadaException;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Horario;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Instalacion;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Reserva;
@@ -18,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -50,12 +53,27 @@ public class ReservaController {
     }
 
     @PostMapping
-    public ResponseEntity<Reserva> create(@RequestBody Reserva reserva) {
+    public ResponseEntity<?> create(@RequestBody Reserva reserva) {
         try {
+            if (reserva.getFecha().isBefore(LocalDate.now())) {
+                return ResponseEntity.badRequest().body("Error: No se pueden hacer reservas en fechas pasadas.");
+            }
+            if (reserva.getFecha().isAfter(LocalDate.now().plus(1, ChronoUnit.WEEKS))) {
+                return ResponseEntity.badRequest()
+                        .body("Error: No se pueden hacer reservas con más de una semana de antelación.");
+            }
+
+            System.out.println(reserva.toString());
+
             reserva = serviMisReservas.saveReserva(reserva);
             return ResponseEntity.ok(reserva);
+        } catch (ReservaDuplicadaException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Ya tienes una reserva en esta fecha.");
+        } catch (InstalacionReservadaException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Error: La instalación ya está reservada en ese horario.");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Error inesperado: " + e.getMessage());
         }
     }
 

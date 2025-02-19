@@ -17,8 +17,9 @@
 | GET     | `/api/admin/reserva/from/{fecha-inicio}`  | Obtener reservas desde una fecha      | 200 OK        | -                        |
 | GET     | `/api/admin/reserva/to/{fecha-fin}`       | Obtener reservas hasta una fecha      | 200 OK        | -                        |
 | GET     | `/api/admin/usuario`                      | Obtener usuarios                      | 200 OK        | -                        |
-| POST    | `/api/admin/usuario`                      | Crear usuario                         | 201 Created   | ```json { "nombre": "string", "email": "string", "rol": "string" } ``` |
-| DELETE  | `/api/admin/usuario`                      | Eliminar usuario                      | 204 No Content | ```json { "id": 1 } ```  |
+| POST    | `/api/admin/usuario`                      | Crear usuario                         | 201 Created   | ```json { "username": "string", "email": "string", "password": "string", "tipo": "ADMIN/OPERARIO/USUARIO", "enabled": true/false } ``` |
+| PUT     | `/api/admin/usuario/{id}`                 | Actualizar un usuario                 | 200 OK        | ```json { "username": "string", "email": "string", "password": "string", "tipo": "ADMIN/OPERARIO/USUARIO", "enabled": true/false } ``` |
+| DELETE  | `/api/admin/usuario/{id}`                 | Eliminar un usuario                   | 204 No Content | -                        |
 
 ## **USUARIO**
 | Método  | Endpoint                                       | Descripción                              | Respuesta HTTP | Cuerpo (JSON) requerido |
@@ -27,14 +28,52 @@
 | GET     | `/api/horario`                                | Obtener horarios                        | 200 OK        | -                        |
 | GET     | `/api/mis-reservas`                           | Obtener reservas del usuario (orden inverso) | 200 OK        | -                        |
 | GET     | `/api/reservar/instalacion/{id}/{fecha}/{fecha}` | Lista de horarios disponibles          | 200 OK        | -                        |
-| POST    | `/api/reservar`                               | Crear una reserva                       | 201 Created   | ```json { "usuario_id": 1, "instalacion_id": 1, "fecha": "YYYY-MM-DD", "hora": "HH:mm:ss" } ``` |
+| POST    | `/api/reservar`                               | Crear una reserva                       | 201 Created   | ```json { "horario": { "id": 1 }, "fecha": "YYYY-MM-DD" } ``` |
+| PUT     | `/api/mis-reservas/{id}`                      | Actualizar una reserva                  | 200 OK        | ```json { "horario": { "id": 1 }, "fecha": "YYYY-MM-DD" } ``` |
+| DELETE  | `/api/mis-reservas/{id}`                      | Eliminar una reserva                    | 204 No Content | -                        |
 
-### **Notas:**
-- Algunos endpoints tienen paginación.
-- Se usa JSON para las peticiones POST y DELETE cuando se requiere enviar datos.
-- Las fechas deben estar en formato `"YYYY-MM-DD"`.
-- Las horas deben estar en formato `"HH:mm:ss"`.
+## **AUTENTICACIÓN**
+| Método  | Endpoint                                       | Descripción                              | Respuesta HTTP | Cuerpo (JSON) requerido |
+|---------|-----------------------------------------------|------------------------------------------|---------------|--------------------------|
+| POST    | `/api/auth/login`                             | Iniciar sesión                           | 200 OK        | ```json { "username": "string", "password": "string" } ``` |
+| POST    | `/api/auth/logout`                            | Cerrar sesión                            | 200 OK        | -                        |
 
-# TAREAS QUE HAY QUE REALIZAR
+---
 
-crud completo reservas, mirar el controlador reservas y mirar el TO-DO Crud de usuarios tambien, como MIS-RESERVAS. Tocar backend para horarios disponibles
+## **Nuevas Funcionalidades Añadidas**
+
+### **1. CRUD de Usuarios**
+- **¿Qué hace?**: Permite a los usuarios con rol `ADMIN` gestionar a otros usuarios (crear, editar, eliminar).
+- **¿Por qué se añadió?**: Para que el administrador pueda gestionar los usuarios del sistema sin necesidad de acceder directamente a la base de datos.
+- **Endpoints nuevos**:
+  - `POST /api/admin/usuario`: Crear un nuevo usuario.
+  - `PUT /api/admin/usuario/{id}`: Actualizar un usuario existente.
+  - `DELETE /api/admin/usuario/{id}`: Eliminar un usuario.
+
+### **2. Mejoras en la Interfaz de Usuario**
+- **¿Qué hace?**: Muestra la pestaña "Usuarios" en el NavBar solo si el usuario logueado tiene el rol `ADMIN`.
+- **¿Por qué se añadió?**: Para que solo los administradores puedan acceder a la gestión de usuarios, manteniendo la seguridad del sistema.
+
+### **3. Formularios Intuitivos**
+- **¿Qué hace?**: Los formularios de creación y edición de usuarios son fáciles de usar y validan los datos ingresados.
+- **¿Por qué se añadió?**: Para mejorar la experiencia del usuario y evitar errores al ingresar datos.
+
+---
+
+## **Instrucciones de Uso**
+
+1. **Iniciar Sesión**:
+   - Accede a la página de login e inicia sesión con tus credenciales.
+   - Si eres un `ADMIN`, verás la pestaña "Usuarios" en el NavBar.
+
+2. **Gestionar Usuarios**:
+   - Haz clic en "Usuarios" para ver la lista de usuarios.
+   - Usa los botones "Añadir Usuario", "Editar" y "Eliminar" para gestionar los usuarios.
+
+3. **Gestionar Reservas**:
+   - Haz clic en "Mis Reservas" para ver, crear, editar o eliminar tus reservas.
+
+4. **Gestionar Instalaciones**:
+   - Si eres un `ADMIN`, haz clic en "Instalaciones" para gestionar las instalaciones deportivas.
+
+

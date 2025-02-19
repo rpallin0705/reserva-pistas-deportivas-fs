@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,15 +52,22 @@ public class ServiHorario {
         });
     }
 
-    public List<Horario> findByInstalacion(Instalacion instalacion){
+    public List<Horario> findByInstalacion(Instalacion instalacion) {
         return repoHorario.findByInstalacion(instalacion);
     }
 
-    public List<Horario> findFreeHorarios (Long idInstalacion, LocalDate fecha) {
+    public List<Horario> findFreeHorarios(Long idInstalacion, LocalDate fecha) {
+        LocalDate today = LocalDate.now();
+        LocalDate oneWeekFromNow = today.plus(1, ChronoUnit.WEEKS);
+        if (fecha.isBefore(today) || fecha.isAfter(oneWeekFromNow)) {
+            throw new IllegalArgumentException("La fecha debe estar entre hoy y una semana en el futuro.");
+        }
         Optional<Instalacion> oInstalacion = serviInstalacion.findById(idInstalacion);
-
-        if (oInstalacion.isPresent()) 
+        if (oInstalacion.isPresent()) {
             return repoReserva.findHorarioByInstalacionFree(oInstalacion.get(), fecha);
+        }
+
         return new ArrayList<>();
     }
+
 }

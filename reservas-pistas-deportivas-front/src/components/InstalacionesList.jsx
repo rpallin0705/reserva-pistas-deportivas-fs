@@ -8,7 +8,7 @@ const InstalacionesList = () => {
     // const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => { 
+    useEffect(() => {
         const peticion = async () => {
             try {
                 const response = await api.get('/instalacion');
@@ -27,8 +27,8 @@ const InstalacionesList = () => {
             <Table>
                 <thead>
                     <tr>
-                        <th>ID</th>  
-                        <th>Nombre</th> 
+                        <th>ID</th>
+                        <th>Nombre</th>
                         <th>Editar</th>
                         <th>Borrar</th>
                     </tr>
@@ -42,10 +42,15 @@ const InstalacionesList = () => {
                                 <Button as={Link} to={`/instalacion/edit/${instalacion.id}`} className="btn-success">
                                     Editar
                                 </Button>
-                            </td>                            
+                            </td>
                             <td>
                                 <Button as={Link} to={`/instalacion/del/${instalacion.id}`} className="btn-danger">
                                     Eliminar
+                                </Button>
+                            </td>
+                            <td>
+                                <Button as={Link} to={`/mis-reservas/add/${instalacion.id}`} className="btn">
+                                    Añadir reserva
                                 </Button>
                             </td>
                         </tr>
