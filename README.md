@@ -1,25 +1,4 @@
-# Endpoints de la API
-
-## **ADMIN**
-| Método  | Endpoint                                     | Descripción                            | Respuesta HTTP | Cuerpo (JSON) requerido |
-|---------|---------------------------------------------|----------------------------------------|---------------|--------------------------|
-| GET     | `/api/admin/instalacion`                   | Obtener instalaciones                 | 200 OK        | -                        |
-| POST    | `/api/admin/instalacion`                   | Crear instalación                     | 201 Created   | ```json { "nombre": "string", "ubicacion": "string" } ``` |
-| DELETE  | `/api/admin/instalacion`                   | Eliminar instalación                  | 204 No Content | ```json { "id": 1 } ```  |
-| GET     | `/api/admin/horario/instalacion/{id}`      | Obtener horarios de una instalación   | 200 OK        | -                        |
-| POST    | `/api/admin/horario/instalacion/{id}`      | Crear horario                         | 201 Created   | ```json { "dia": "string", "hora_inicio": "HH:mm:ss", "hora_fin": "HH:mm:ss" } ``` |
-| DELETE  | `/api/admin/horario/instalacion/{id}`      | Eliminar horario                      | 204 No Content | ```json { "id": 1 } ```  |
-| GET     | `/api/admin/reserva`                       | Obtener reservas                      | 200 OK        | -                        |
-| GET     | `/api/admin/reserva/usuario/{id}`         | Obtener reservas de un usuario        | 200 OK        | -                        |
-| GET     | `/api/admin/reserva/instalacion/{id}`     | Obtener reservas de una instalación   | 200 OK        | -                        |
-| GET     | `/api/admin/reserva/instalacion/{id}/now` | Obtener reservas actuales             | 200 OK        | -                        |
-| GET     | `/api/admin/reserva/instalacion/{id}/today` | Obtener reservas del día              | 200 OK        | -                        |
-| GET     | `/api/admin/reserva/from/{fecha-inicio}`  | Obtener reservas desde una fecha      | 200 OK        | -                        |
-| GET     | `/api/admin/reserva/to/{fecha-fin}`       | Obtener reservas hasta una fecha      | 200 OK        | -                        |
-| GET     | `/api/admin/usuario`                      | Obtener usuarios                      | 200 OK        | -                        |
-| POST    | `/api/admin/usuario`                      | Crear usuario                         | 201 Created   | ```json { "username": "string", "email": "string", "password": "string", "tipo": "ADMIN/OPERARIO/USUARIO", "enabled": true/false } ``` |
-| PUT     | `/api/admin/usuario/{id}`                 | Actualizar un usuario                 | 200 OK        | ```json { "username": "string", "email": "string", "password": "string", "tipo": "ADMIN/OPERARIO/USUARIO", "enabled": true/false } ``` |
-| DELETE  | `/api/admin/usuario/{id}`                 | Eliminar un usuario                   | 204 No Content | -                        |
+# Endpoints de la API         |
 
 ## **USUARIO**
 | Método  | Endpoint                                       | Descripción                              | Respuesta HTTP | Cuerpo (JSON) requerido |
@@ -49,6 +28,9 @@
   - `POST /api/admin/usuario`: Crear un nuevo usuario.
   - `PUT /api/admin/usuario/{id}`: Actualizar un usuario existente.
   - `DELETE /api/admin/usuario/{id}`: Eliminar un usuario.
+  - `POST /api/mis-reservas`: Crear o actualizar una nueva reserva.
+  - `DELETE /api/mis-reservas/{id}`: Eliminar una reserva.
+  - `api/mis-reservas/horario/instalacion/{id}/fecha/{fecha}`: Endpoint que utiliza el front para traer los horarios disponibles de la aplicación.
 
 ### **2. Mejoras en la Interfaz de Usuario**
 - **¿Qué hace?**: Muestra la pestaña "Usuarios" en el NavBar solo si el usuario logueado tiene el rol `ADMIN`.
@@ -77,3 +59,18 @@
    - Si eres un `ADMIN`, haz clic en "Instalaciones" para gestionar las instalaciones deportivas.
 
 
+### **4. Swagger-api **
+
+Implementamos swagger-api para la documentación de todos los endpoints y modelos de la aplicación.
+
+## **Instrucciones de **USUARIO**
+
+1. Acceder a la siguiente url http://localhost:8080/swagger-ui
+2. Buscar el endpoint para iniciar sesión en este caso /login
+3. Iniciar sesión con uno de los usuarios de prueba
+   - Usuario: `admin`
+   - Contraseña: `Secreto_123`
+4. En la petición copiar el jwt que se manda
+5. En la parte superior de la página de swagger clickar en `Authorize`, pegar el token y validar
+
+Con esto ya podrás probrar todos los endpoints que ofrece la aplicación 
