@@ -59,11 +59,11 @@
    - Si eres un `ADMIN`, haz clic en "Instalaciones" para gestionar las instalaciones deportivas.
 
 
-### **4. Swagger-api **
+### **4. Swagger-api**
 
 Implementamos swagger-api para la documentación de todos los endpoints y modelos de la aplicación.
 
-## **Instrucciones de **USUARIO**
+## **Instrucciones de USUARIO**
 
 1. Acceder a la siguiente url http://localhost:8080/swagger-ui
 2. Buscar el endpoint para iniciar sesión en este caso /login
