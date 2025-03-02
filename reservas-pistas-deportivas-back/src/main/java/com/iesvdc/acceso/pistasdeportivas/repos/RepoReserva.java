@@ -14,6 +14,7 @@ import com.iesvdc.acceso.pistasdeportivas.modelos.Usuario;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 
 
@@ -23,6 +24,9 @@ public interface RepoReserva extends JpaRepository<Reserva, Long> {
     // Reservas para un usuario
     List<Reserva> findByUsuario(Usuario usuario);
     List<Reserva> findByUsuario(Usuario usuario, Pageable page);
+    Optional<Reserva> findByUsuarioAndFecha(Usuario usuario, LocalDate fecha);
+
+
     boolean existsByUsuarioAndFecha(Usuario usuario, LocalDate fecha);
     boolean existsByFechaAndHorario(LocalDate fecha, Horario horario);
 

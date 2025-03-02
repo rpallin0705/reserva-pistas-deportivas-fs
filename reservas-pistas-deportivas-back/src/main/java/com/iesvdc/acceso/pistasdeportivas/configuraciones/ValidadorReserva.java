@@ -1,6 +1,7 @@
 package com.iesvdc.acceso.pistasdeportivas.configuraciones;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.iesvdc.acceso.pistasdeportivas.exceptions.FechaInvalidaException;
 import com.iesvdc.acceso.pistasdeportivas.exceptions.ReservaDuplicadaException;
@@ -12,10 +13,14 @@ import com.iesvdc.acceso.pistasdeportivas.repos.RepoReserva;
 
 public class ValidadorReserva {
 
-    public static void validarReservaDuplicada(Usuario usuario, LocalDate fecha, RepoReserva reservaRepositorio) {
-        boolean existeReserva = reservaRepositorio.existsByUsuarioAndFecha(usuario, fecha);
-        if (existeReserva) {
-            throw new ReservaDuplicadaException("El usuario ya tiene una reserva para la fecha: " + fecha);
+    public static void validarReservaDuplicada(Usuario usuario, LocalDate fecha, RepoReserva reservaRepositorio,
+            Long idReserva) {
+        Optional<Reserva> reservaExistente = reservaRepositorio.findByUsuarioAndFecha(usuario, fecha);
+
+        if (reservaExistente.isPresent()) {
+            if (idReserva == null || !reservaExistente.get().getId().equals(idReserva)) {
+                throw new ReservaDuplicadaException("El usuario ya tiene una reserva para la fecha: " + fecha);
+            }
         }
     }
 
@@ -41,17 +46,15 @@ public class ValidadorReserva {
 
     public static void validarInstalacionReservada(Reserva reserva, RepoReserva reservaRepositorio) {
         boolean instalacionReservada = reservaRepositorio.existsByFechaAndHorario(
-            reserva.getFecha(),
-            reserva.getHorario()
-        );
+                reserva.getFecha(),
+                reserva.getHorario());
 
         if (instalacionReservada) {
             throw new InstalacionReservadaException(
-                "La instalación ya está reservada en esta fecha y horario: " +
-                reserva.getFecha() + " " +
-                reserva.getHorario().getHoraInicio() + " - " +
-                reserva.getHorario().getHoraFin()
-            );
+                    "La instalación ya está reservada en esta fecha y horario: " +
+                            reserva.getFecha() + " " +
+                            reserva.getHorario().getHoraInicio() + " - " +
+                            reserva.getHorario().getHoraFin());
         }
     }
 }

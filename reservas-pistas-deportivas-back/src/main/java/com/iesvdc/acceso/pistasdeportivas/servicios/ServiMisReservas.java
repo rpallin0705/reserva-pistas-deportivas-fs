@@ -1,6 +1,5 @@
 package com.iesvdc.acceso.pistasdeportivas.servicios;
 
-
 import com.iesvdc.acceso.pistasdeportivas.configuraciones.ValidadorReserva;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Reserva;
 import com.iesvdc.acceso.pistasdeportivas.modelos.Usuario;
@@ -20,7 +19,6 @@ public class ServiMisReservas {
     @Autowired
     private ServiUsuario serviUsuario;
 
-
     /**
      * Obtiene las reservas del usuario que hizo login.
      *
@@ -30,7 +28,7 @@ public class ServiMisReservas {
     public List<Reserva> findReservasByUsuario() {
         return repoReserva.findByUsuario(serviUsuario.getLoggedUser());
     }
-        
+
     /**
      * Crea o actualiza una reserva. Si tiene ID la reserva se actualiza.
      * Se validan las siguientes reglas:
@@ -58,12 +56,12 @@ public class ServiMisReservas {
                     throw new Exception("No puedes modificar una reserva que no te pertenece.");
                 }
                 ValidadorReserva.validarReservaPasada(oReserva.get());
-                ValidadorReserva.validarReservaDuplicada(uLogged, reserva.getFecha(), repoReserva);
+                ValidadorReserva.validarReservaDuplicada(uLogged, reserva.getFecha(), repoReserva, reserva.getId());
             } else {
                 throw new Exception("La reserva no existe.");
             }
         } else {
-            ValidadorReserva.validarReservaDuplicada(uLogged, reserva.getFecha(), repoReserva);
+            ValidadorReserva.validarReservaDuplicada(uLogged, reserva.getFecha(), repoReserva, null);
             ValidadorReserva.validarInstalacionReservada(reserva, repoReserva);
         }
 
@@ -85,7 +83,7 @@ public class ServiMisReservas {
             Usuario uLogged = serviUsuario.getLoggedUser();
 
             if (!reserva.get().getUsuario().equals(uLogged)) {
-                return Optional.empty(); 
+                return Optional.empty();
             }
 
             ValidadorReserva.validarReservaPasada(reserva.get());
